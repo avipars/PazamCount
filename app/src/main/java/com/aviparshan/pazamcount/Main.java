@@ -2,9 +2,12 @@ package com.aviparshan.pazamcount;
 
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -37,7 +41,32 @@ public class Main extends AppCompatActivity {
     ProgressBar prog;
     Boolean startSet = false, endSet = false;
     private static final String[] paths = {"2 Years 8 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"};
-    TextView release, left, count, progre;
+    TextView release, left, count, progre, serv;
+    Calendar selectedDate = Calendar.getInstance();
+
+    public static void putPref(String key, int value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public static void putPref(String key, String value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(key, value);
+        editor.apply();
+    }
+
+    public static String getPref(String key, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(key, null);
+    }
+
+    public static int getIntPref(String key, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getInt(key, 0);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +75,6 @@ public class Main extends AppCompatActivity {
 
         JodaTimeAndroid.init(this);
         calendar = Calendar.getInstance();
-
         prog = findViewById(R.id.progressBar);
         date = findViewById(R.id.datepicker);
         spinner = findViewById(R.id.spinner1);
@@ -54,13 +82,15 @@ public class Main extends AppCompatActivity {
         left = findViewById(R.id.daysleft);
         count = findViewById(R.id.count);
         progre = findViewById(R.id.progress);
-
+        serv = findViewById(R.id.served);
         prog.setProgress(0);   // Main Progress
         prog.setSecondaryProgress(100); // Secondary Progress
         prog.setMax(100); // Maximum Progress
         Resources res = getResources();
         Drawable drawable = res.getDrawable(R.drawable.circular);
         prog.setProgressDrawable(drawable);
+
+        // setSpinner();
 
         date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,12 +102,13 @@ public class Main extends AppCompatActivity {
                         calendar.set(Calendar.MONTH, monthOfYear);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         startD = calendar.getTime();
-                        start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calendar.getTime());
+                        start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(startD);
                         date.setText(start_date); //show on button
                         endSet = true;
                         setDiff();
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                sdatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 sdatePickerDialog.show();
             }
         });
@@ -86,42 +117,62 @@ public class Main extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, paths);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        int timer = getIntPref("Time", getApplicationContext()); //gets results form shared prefs
+        spinner.setSelection(timer); //sets Spinner to previous results
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String itemText = spinner.getSelectedItem().toString();
+                //String itemText = spinner.getSelectedItem().toString();
                 startSet = true;
                 setDiff();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }
 
+    private void setSharedPreferences() {
+        int itemPosition = spinner.getSelectedItemPosition();
+        putPref("Time", itemPosition, getApplicationContext());
+        putPref("Date", date.getText().toString(), getApplicationContext());
+        Toast.makeText(this, "Set Shared Prefs" + itemPosition, Toast.LENGTH_SHORT).show();
+    }
+
     private void setDiff() {
         if (startSet && endSet) {
-
+            setSharedPreferences();
             String itemText = spinner.getSelectedItem().toString();
             int month = serviceTime(itemText);
             int days = (int) (month * 30.4167);
             Date f = getFutureDate(startD, days);
-            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            DateFormat df = new SimpleDateFormat("EEEE, MMMM d, yyyy");
             String reportDate = df.format(f);
             DateTime now = new DateTime();
             LocalDate today = now.toLocalDate();
             int days_left = Days.daysBetween(new LocalDate(f), new LocalDate(today)).getDays();
             int total_days = Days.daysBetween(new LocalDate(startD), new LocalDate(f)).getDays();
+            int served = total_days - abs(days_left);
+            int progress = 0;
+            try {
+                progress = 100 * served / total_days; //don't mess with this
+                if (progress >= 100) {
+                    progress = 100;
+                } else if (progress < 0) {
+                    progress = abs(progress);
+                }
+            } catch (ArithmeticException e) {
+                Toast.makeText(this, "Divide by zero " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                progress = 0;
+            }
             release.setText("Release Date: " + reportDate);
             left.setText("Total Service Days:  " + total_days);
             count.setText("Days Left: " + abs(days_left));
-
-           // int progress =  /total_days;
-           // progre.setText(progress + "%");
-           // prog.setProgress(progress); //days done / total days
-
+            serv.setText("Days Served: " + served);
+            progre.setText("Progress: " + progress + "%");
+            prog.setProgress(progress); //days done / total days
         }
     }
 
@@ -129,14 +180,11 @@ public class Main extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
         cal.add(Calendar.DATE, days);
-
-        Date futureDate = cal.getTime();
-        return futureDate;
+        return cal.getTime();
     }
 
     private int serviceTime(String time) {
         int months = 0;
-        //{"2 Years 8 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"
         switch (time) {
             case "2 Years 8 Months":
                 months = 32;
@@ -147,7 +195,7 @@ public class Main extends AppCompatActivity {
             case "2 Years":
                 months = 24;
                 break;
-            case "1 Years 6 Months":
+            case "1 Year 6 Months":
                 months = 18;
                 break;
             case "1 Year":
@@ -159,5 +207,6 @@ public class Main extends AppCompatActivity {
         }
         return months;
     }
+
 
 }

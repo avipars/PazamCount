@@ -55,12 +55,18 @@
         android:text="Days Left: " />
 
     <TextView
-        android:id="@+id/progress"
+        android:id="@+id/served"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/count"
-        android:text="Progress: " />
+        android:text="Days Served: " />
 
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/served"
+        android:text="Progress: " />
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
