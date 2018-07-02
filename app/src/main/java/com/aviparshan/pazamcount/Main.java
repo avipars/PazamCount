@@ -43,7 +43,7 @@ public class Main extends AppCompatActivity {
     private static final String[] paths = {"2 Years 8 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"};
     TextView release, left, count, progre, serv;
     Calendar selectedDate = Calendar.getInstance();
-
+    DatePickerDialog sdatePickerDialog;
     public static void putPref(String key, int value, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
@@ -91,11 +91,10 @@ public class Main extends AppCompatActivity {
         prog.setProgressDrawable(drawable);
 
         // setSpinner();
-
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog sdatePickerDialog = new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
+                sdatePickerDialog = new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         calendar.set(Calendar.YEAR, year);
@@ -138,7 +137,7 @@ public class Main extends AppCompatActivity {
         int itemPosition = spinner.getSelectedItemPosition();
         putPref("Time", itemPosition, getApplicationContext());
         putPref("Date", date.getText().toString(), getApplicationContext());
-        Toast.makeText(this, "Set Shared Prefs" + itemPosition, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Set Shared Prefs: " + itemPosition + date.getText().toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void setDiff() {
@@ -172,7 +171,11 @@ public class Main extends AppCompatActivity {
             count.setText("Days Left: " + abs(days_left));
             serv.setText("Days Served: " + served);
             progre.setText("Progress: " + progress + "%");
-            prog.setProgress(progress); //days done / total days
+
+            ProgressBarAnimation anim = new ProgressBarAnimation(prog, 0, progress);
+            anim.setDuration(1000);
+            prog.startAnimation(anim);
+            //prog.setProgress(progress); //days done / total days
         }
     }
 
