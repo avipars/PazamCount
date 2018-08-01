@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">PazamCount</string>
-    <string name="draft_time">Draft Time</string>
     <string name="draft_date">Draft Date</string>
-
-
     <string name="btn_sign_up">Save</string>
 </resources>
