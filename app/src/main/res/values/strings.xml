@@ -2,4 +2,6 @@
     <string name="app_name">PazamCount</string>
     <string name="draft_date">Draft Date</string>
     <string name="btn_sign_up">Save</string>
+    <string name="service_time">Service Time</string>
+    <string name="go_back">Change Date</string>
 </resources>

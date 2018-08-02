@@ -6,4 +6,8 @@
     <color name="red">#ff0900</color>
     <color name="colorButton">#4e4e4e</color>
     <color name="white">#ffffff</color>
+    <color name="indigo">#495adc</color>
+    <color name="light_black">#504f4f</color>
+    <color name="black">#000000</color>
+    <color name="blue">#0737d4</color>
 </resources>
