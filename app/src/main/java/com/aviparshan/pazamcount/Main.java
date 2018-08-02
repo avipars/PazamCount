@@ -53,7 +53,6 @@ public class Main extends AppCompatActivity {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         if (!isFirstRun) {
-
             Date formattedDate = new Date(Helper.getLongPref("Date", getApplicationContext()));
             String dayString = new SimpleDateFormat("dd", Locale.ENGLISH).format(formattedDate);
             String monthString = new SimpleDateFormat("MM", Locale.ENGLISH).format(formattedDate);

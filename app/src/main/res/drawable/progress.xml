@@ -6,7 +6,7 @@
         <shape
             android:shape="rectangle"
             android:tint="?attr/colorControlNormal">
-            <corners android:radius="4dp" />
+            <corners android:radius="6dp" />
             <size android:height="20dp" />
             <solid android:color="#90caf9" />
         </shape>
@@ -18,7 +18,7 @@
             <shape
                 android:shape="rectangle"
                 android:tint="?attr/colorControlActivated">
-                <corners android:radius="4dp" />
+                <corners android:radius="6dp" />
                 <size android:height="20dp" />
                 <solid android:color="#b9f6ca" />
             </shape>

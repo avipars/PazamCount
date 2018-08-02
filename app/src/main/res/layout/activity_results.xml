@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/activity_vertical_margin"
-    android:layout_marginTop="?attr/actionBarSize"
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".Results">
@@ -15,65 +13,170 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:elevation="4dp"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="1dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="4dp"
+        card_view:cardPreventCornerOverlap="true"
+        card_view:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/days"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/subhead"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/days_left"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/percentService"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/subheadPercent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/percentage_of_service"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/pazam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/subheadPazam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/pazam"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="4dp"
         card_view:cardPreventCornerOverlap="true"
         card_view:cardUseCompatPadding="true">
 
         <RelativeLayout
+            android:id="@+id/relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/title"
+            <LinearLayout
+                android:id="@+id/linearDates"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:padding="5dp"
-                android:text="Percentage"
-                android:textSize="18sp" />
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <TextView
-                android:id="@+id/days_left"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toEndOf="@id/progressBar"
-                android:elevation="1dp"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/draft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:text="8/8/2017"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/percentage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/progressBar"
-                android:elevation="1dp"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/release"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_weight="1"
+                    android:layoutDirection="rtl"
+                    android:text="7/4/2020"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"
                 android:layout_gravity="center"
+                android:layout_below="@id/linearDates"
                 android:layout_margin="5dp"
                 android:indeterminate="false"
                 android:max="100"
+                android:padding="5dp"
                 android:progress="20"
                 android:progressDrawable="@drawable/progress"
                 android:secondaryProgress="50"
                 android:theme="@style/LinearProgress" />
 
+            <TextView
+                android:id="@+id/stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/progressBar"
+                android:layout_margin="5dp"
+                android:gravity="bottom|center"
+                android:padding="5dp"
+                android:text="Stats"
+                android:textSize="18sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-</LinearLayout>
+</RelativeLayout>

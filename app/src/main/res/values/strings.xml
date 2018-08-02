@@ -4,4 +4,7 @@
     <string name="btn_sign_up">Save</string>
     <string name="service_time">Service Time</string>
     <string name="go_back">Change Date</string>
+    <string name="days_left">Days Left</string>
+    <string name="percentage_of_service">% Done</string>
+    <string name="pazam">Days Served</string>
 </resources>

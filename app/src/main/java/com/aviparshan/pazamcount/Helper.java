@@ -1,13 +1,33 @@
 package com.aviparshan.pazamcount;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 /**
  * Created by avipars on 8/2/18 on com.aviparshan.pazamcount
  */
 public class Helper {
+
+    public static void animateTextView(int initialValue, int finalValue, final TextView textview) {
+
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(initialValue, finalValue);
+        valueAnimator.setDuration(2000);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                textview.setText(valueAnimator.getAnimatedValue().toString());
+            }
+        });
+        valueAnimator.start();
+
+    }
+
+    static double Rounder(double a) {
+        return Math.round(a * 100.0) / 100.0;
+    }
 
     static int serviceTime(String time) {
         int months = 0; //retrieved from paths
