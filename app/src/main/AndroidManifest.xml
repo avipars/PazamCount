@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aviparshan.pazamcount">
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,7 +22,6 @@
         <activity
             android:name=".Results"
             android:screenOrientation="portrait">
-
         </activity>
     </application>
 

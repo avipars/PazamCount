@@ -3,14 +3,18 @@ package com.aviparshan.pazamcount;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -41,6 +45,12 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Window window = getWindow();
+        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+
         checkFirstRun();
 
         JodaTimeAndroid.init(this);
@@ -67,7 +77,6 @@ public class Main extends AppCompatActivity {
             day = c.get(Calendar.DAY_OF_MONTH);
         }
 
-        //datePicker.updateDate(year, month, day);
         datePicker.init(year, month, day, new DatePicker.OnDateChangedListener() {
 
             @Override
@@ -79,34 +88,9 @@ public class Main extends AppCompatActivity {
                 start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(startD);
                 dateSet = true;
                 nextStep();
-                //setCurrentTime(year, month, dayOfMonth);
             }
         });
 
-//        date.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                datePickerDialog = new DatePickerDialog(v.getContext(), new DatePickerDialog.OnDateSetListener() {
-//                    @Override
-//                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                        calendar.set(Calendar.YEAR, year);
-//                        calendar.set(Calendar.MONTH, monthOfYear);
-//                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//                        startD = calendar.getTime();
-//                        start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(startD);
-//                        date.setText(start_date); //show on button
-//                        dateSet = true;
-//                        nextStep();
-//                    }
-//                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-//                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-//                datePickerDialog.show();
-//
-//                datePickerDialog.updateDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-//
-//            }
-//        });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Main.this,
                 android.R.layout.simple_spinner_item, paths);
@@ -122,6 +106,7 @@ public class Main extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //String itemText = spinner.getSelectedItem().toString();
                 spinnerSet = true;
+                Toast.makeText(Main.this, R.string.click, Toast.LENGTH_SHORT).show();
                 nextStep();
             }
 
@@ -138,9 +123,18 @@ public class Main extends AppCompatActivity {
     }
 
     void setDatePref(Date startD) {
-        long millis = startD.getTime();
-        // String formatted = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(startD);
-        Helper.putPref("Date", millis, getApplicationContext());
+        try {
+            long millis = startD.getTime();
+            // String formatted = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(startD);
+            Helper.putPref("Date", millis, getApplicationContext());
+        } catch (NullPointerException npe) {
+
+            Toast.makeText(this, npe.toString(), Toast.LENGTH_SHORT).show();
+//            Calendar c = Calendar.getInstance();
+//            long millis = c.getTimeInMillis();
+//            Helper.putPref("Date", millis, getApplicationContext());
+//        }
+        }
     }
 
     void nextStep() {

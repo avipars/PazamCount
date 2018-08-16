@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp"
+    android:layout_margin="@dimen/activity_vertical_margin"
+    android:layout_marginTop="?android:attr/actionBarSize"
     tools:context=".Results">
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -178,5 +180,29 @@
                 android:text="Stats"
                 android:textSize="18sp" />
         </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card2"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="4dp"
+        card_view:cardPreventCornerOverlap="true"
+        card_view:cardUseCompatPadding="true">
+
+        <TextView
+            android:id="@+id/pazamStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progressBar"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Stats"
+            android:textSize="18sp" />
     </android.support.v7.widget.CardView>
 </RelativeLayout>

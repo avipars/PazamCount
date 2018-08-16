@@ -1,6 +1,7 @@
 package com.aviparshan.pazamcount;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,9 +33,10 @@ public class Results extends AppCompatActivity {
     ProgressBar prog;
     TextView stats, daysLeftTextView, percentDone, pazamDays;
     TextView draft, release;
+    TextView pazamStats;
     TextView subDaysLeft, subPercentDone, subDaysServed;
     Calendar calendar;
-    CardView card;
+    CardView card, card3;
     boolean isTimerRunning;
     Date f;
     int progress;
@@ -45,6 +49,15 @@ public class Results extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
+
+        Window window = getWindow();
+        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+
+        card3 = findViewById(R.id.card3);
+        pazamStats = findViewById(R.id.pazamStats);
         card = findViewById(R.id.card);
         draft = findViewById(R.id.draft);
         release = findViewById(R.id.release);
@@ -62,26 +75,28 @@ public class Results extends AppCompatActivity {
         prog.setMax(100); // Maximum Progress
 
         setDiff();
-
-        card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!released) {
-                    String done = percentDone.getText().toString();
-                    int left = 100 - Integer.valueOf(done);
-                    percentDone.setText(left + "");
-                    if (subPercentDone.getText().toString().equalsIgnoreCase("% Done")) {
-                        subPercentDone.setText("% Left");
-                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
-
-                    } else {
-                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
-                        subPercentDone.setText("% Done");
-
-                    }
-                }
-            }
-        });
+        if (released) {
+            card3.setVisibility(View.GONE);
+        }
+//        card.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!released) {
+//                    String done = percentDone.getText().toString();
+//                    int left = 100 - Integer.valueOf(done);
+//                    percentDone.setText(left + "");
+//                    if (subPercentDone.getText().toString().equalsIgnoreCase("% Done")) {
+//                        subPercentDone.setText("% Left");
+//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
+//
+//                    } else {
+//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
+//                        subPercentDone.setText("% Done");
+//
+//                    }
+//                }
+//            }
+//        });
     }
 
 
@@ -124,6 +139,8 @@ public class Results extends AppCompatActivity {
         double minutesLeft = (days_left) * 1440;
         double secondsLeft = (days_left) * 86400;
 
+        double monthsDone = served / 30.4375;
+        double weeksDone = served / 7;
         try {
             progress = 100 * served / total_days; //don't mess with this
             if (progress < 0) {
@@ -141,6 +158,8 @@ public class Results extends AppCompatActivity {
                     weeksLeft + " Weeks Left\n" + hoursLeft + " Hours Left\n" + minutesLeft + " Minutes Left\n"
                     + secondsLeft + " Seconds Left\n");
             Helper.animateTextView(0, served, pazamDays);
+            pazamStats.setText(Helper.Rounder(monthsDone) + " Months Served\n" + Helper.Rounder(weeksDone) + " Weeks Served\n");
+
         } else {
             released = true;
             Toast.makeText(this, "Service Finished", Toast.LENGTH_SHORT).show();

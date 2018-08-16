@@ -7,4 +7,5 @@
     <string name="days_left">Days Left</string>
     <string name="percentage_of_service">% Done</string>
     <string name="pazam">Days Served</string>
+    <string name="click">Click on a date to continue</string>
 </resources>
