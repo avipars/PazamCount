@@ -1,14 +1,21 @@
 package com.aviparshan.pazamcount;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -44,57 +51,19 @@ public class Results extends AppCompatActivity {
     boolean released = false;
     private Handler handler = new Handler();
     private Runnable runnable;
-
+    Toolbar toolbar;
     Helper help = new Helper();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_results);
-
-        gradient();
-
-        card3 = findViewById(R.id.card3);
-        pazamStats = findViewById(R.id.pazamStats);
-        card = findViewById(R.id.card);
-        draft = findViewById(R.id.draft);
-        release = findViewById(R.id.release);
-        subDaysLeft = findViewById(R.id.subhead);
-        subDaysServed = findViewById(R.id.subheadPazam);
-        subPercentDone = findViewById(R.id.subheadPercent);
-        prog = findViewById(R.id.progressBar);
-        stats = findViewById(R.id.stats);
-        daysLeftTextView = findViewById(R.id.days);
-        percentDone = findViewById(R.id.percentService);
-        pazamDays = findViewById(R.id.pazam);
-
-        prog.setProgress(0);   // Main Progress
-        prog.setSecondaryProgress(50); // Secondary Progress
-        prog.setMax(100); // Maximum Progress
-
-        setDiff();
-        if (released) {
-            card3.setVisibility(View.GONE);
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void setStatusBarGradiant(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+            Drawable background = activity.getResources().getDrawable(R.drawable.bg_gradient);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+            window.setNavigationBarColor(activity.getResources().getColor(android.R.color.transparent));
+            window.setBackgroundDrawable(background);
         }
-//        card.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!released) {
-//                    String done = percentDone.getText().toString();
-//                    int left = 100 - Integer.valueOf(done);
-//                    percentDone.setText(left + "");
-//                    if (subPercentDone.getText().toString().equalsIgnoreCase("% Done")) {
-//                        subPercentDone.setText("% Left");
-//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
-//
-//                    } else {
-//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
-//                        subPercentDone.setText("% Done");
-//
-//                    }
-//                }
-//            }
-//        });
     }
 
 
@@ -197,17 +166,68 @@ public class Results extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_results, menu);
-        return true;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStatusBarGradiant(this);
+        setContentView(R.layout.activity_results);
+
+        toolbar = findViewById(R.id.tool);
+        setSupportActionBar(toolbar);
+
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            Drawable gradientBG = getResources().getDrawable(R.drawable.bg_transparent);
+            ab.setBackgroundDrawable(gradientBG);
+        }
+
+        card3 = findViewById(R.id.card3);
+        pazamStats = findViewById(R.id.pazamStats);
+        card = findViewById(R.id.card);
+        draft = findViewById(R.id.draft);
+        release = findViewById(R.id.release);
+        subDaysLeft = findViewById(R.id.subhead);
+        subDaysServed = findViewById(R.id.subheadPazam);
+        subPercentDone = findViewById(R.id.subheadPercent);
+        prog = findViewById(R.id.progressBar);
+        stats = findViewById(R.id.stats);
+        daysLeftTextView = findViewById(R.id.days);
+        percentDone = findViewById(R.id.percentService);
+        pazamDays = findViewById(R.id.pazam);
+
+        prog.setProgress(0);   // Main Progress
+        prog.setSecondaryProgress(50); // Secondary Progress
+        prog.setMax(100); // Maximum Progress
+
+        setDiff();
+        if (released) {
+            card3.setVisibility(View.GONE);
+        }
+//        card.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!released) {
+//                    String done = percentDone.getText().toString();
+//                    int left = 100 - Integer.valueOf(done);
+//                    percentDone.setText(left + "");
+//                    if (subPercentDone.getText().toString().equalsIgnoreCase("% Done")) {
+//                        subPercentDone.setText("% Left");
+//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
+//
+//                    } else {
+//                        Helper.animateTextView(Integer.valueOf(done), left, percentDone);
+//                        subPercentDone.setText("% Done");
+//
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.back:
+            case 1:
                 Helper.putPref(help.goBackKey, true, getApplicationContext());
                 Intent settings = new Intent(this, Main.class);
                 Bundle bundle = ActivityOptions.makeCustomAnimation(this,
@@ -219,6 +239,15 @@ public class Results extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_patient_home_screen, menu);
+
+        menu.add(0, 1, 1, menuIconWithText(getResources().getDrawable(R.drawable.ic_date_), getResources().getString(R.string.go_back)));
+        return true;
+    }
+
     private void gradient() {
         Window window = getWindow();
         Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
@@ -227,6 +256,15 @@ public class Results extends AppCompatActivity {
         window.setBackgroundDrawable(background);
     }
 
+    private CharSequence menuIconWithText(Drawable r, String title) {
+
+        r.setBounds(0, 0, r.getIntrinsicWidth(), r.getIntrinsicHeight());
+        SpannableString sb = new SpannableString("    " + title);
+        ImageSpan imageSpan = new ImageSpan(r, ImageSpan.ALIGN_BOTTOM);
+        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return sb;
+    }
     protected void onStop() {
         super.onStop();
         stopUpdates();
