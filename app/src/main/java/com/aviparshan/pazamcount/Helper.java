@@ -11,6 +11,12 @@ import android.widget.TextView;
  */
 public class Helper {
 
+    public final String spinnerPreferenceKey = "Time";
+    public final String datePreferenceKey = "Date";
+    public final String prefKey = "PREFERENCE";
+    public final String firstRunKey = "isFirstRun";
+    public final String goBackKey = "goBack";
+
     public static void animateTextView(int initialValue, int finalValue, final TextView textview) {
 
         ValueAnimator valueAnimator = ValueAnimator.ofInt(initialValue, finalValue);
@@ -22,7 +28,6 @@ public class Helper {
             }
         });
         valueAnimator.start();
-
     }
 
     static double Rounder(double a) {

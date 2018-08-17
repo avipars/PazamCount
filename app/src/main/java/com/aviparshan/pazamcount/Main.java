@@ -1,14 +1,18 @@
 package com.aviparshan.pazamcount;
 
 
+import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,12 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main extends AppCompatActivity {
 
     private static final String[] paths = {"2 Years 8 Months", "2 Years 6 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"};
-    final String welcomeScreenShownPref = "welcomeScreenShown";
-
     private Spinner spinner;
     DatePicker datePicker;
     String start_date;
@@ -39,36 +43,37 @@ public class Main extends AppCompatActivity {
     boolean isFirstRun;
     int year, month, day;
     private Button date;
+    FloatingActionButton fab;
+
+    Helper help = new Helper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Window window = getWindow();
-        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
-        window.setBackgroundDrawable(background);
-
         checkFirstRun();
+        gradient();
 
         JodaTimeAndroid.init(this);
         calendar = Calendar.getInstance();
         datePicker = findViewById(R.id.datePicker);
         spinner = findViewById(R.id.spinner);
+        fab = findViewById(R.id.floating);
+
+        showFAB();
 
         datePicker.setMaxDate(System.currentTimeMillis());
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         if (!isFirstRun) {
-            Date formattedDate = new Date(Helper.getLongPref("Date", getApplicationContext()));
+            Date formattedDate = new Date(Helper.getLongPref(help.datePreferenceKey, getApplicationContext()));
             String dayString = new SimpleDateFormat("dd", Locale.ENGLISH).format(formattedDate);
             String monthString = new SimpleDateFormat("MM", Locale.ENGLISH).format(formattedDate);
             String yearString = new SimpleDateFormat("YYYY", Locale.ENGLISH).format(formattedDate);
             year = Integer.parseInt(yearString);
-            month = Integer.parseInt(monthString) - 1;
+            month = Integer.parseInt(monthString) - 1; //because it starts at 0
             day = Integer.parseInt(dayString);
         } else {
             Calendar c = Calendar.getInstance();
@@ -87,7 +92,6 @@ public class Main extends AppCompatActivity {
                 startD = calendar.getTime();
                 start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(startD);
                 dateSet = true;
-                nextStep();
             }
         });
 
@@ -97,39 +101,50 @@ public class Main extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        int timer = Helper.getIntPref("Time", getApplicationContext()); //gets results form shared prefs
+        int timer = Helper.getIntPref(help.spinnerPreferenceKey, getApplicationContext()); //gets results form shared prefs
         spinner.setSelection(timer); //sets Spinner to previous results
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //String itemText = spinner.getSelectedItem().toString();
                 spinnerSet = true;
-                Toast.makeText(Main.this, R.string.click, Toast.LENGTH_SHORT).show();
-                nextStep();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideFAB();
+                nextStep();
+            }
+        });
     }
 
+    private void gradient() {
+        Window window = getWindow();
+        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+    }
 
     void setTimePref() {
         int itemPosition = spinner.getSelectedItemPosition();
-        Helper.putPref("Time", itemPosition, getApplicationContext());
+        Helper.putPref(help.spinnerPreferenceKey, itemPosition, getApplicationContext());
     }
 
     void setDatePref(Date startD) {
         try {
             long millis = startD.getTime();
             // String formatted = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(startD);
-            Helper.putPref("Date", millis, getApplicationContext());
+            Helper.putPref(help.datePreferenceKey, millis, getApplicationContext());
         } catch (NullPointerException npe) {
-
-            Toast.makeText(this, npe.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, npe.toString() + " Please report to developer", Toast.LENGTH_SHORT).show();
 //            Calendar c = Calendar.getInstance();
 //            long millis = c.getTimeInMillis();
 //            Helper.putPref("Date", millis, getApplicationContext());
@@ -137,12 +152,37 @@ public class Main extends AppCompatActivity {
         }
     }
 
+    /*
+    saves preferences based on what has changed
+     */
     void nextStep() {
-        if (spinnerSet & dateSet) {
-            setTimePref();
-            setDatePref(startD);
-            openResults();
-        }
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (spinnerSet & dateSet) {
+                    setTimePref();
+                    setDatePref(startD);
+                    openResultsAnimation();
+                } else if (spinnerSet & !dateSet) {
+                    setTimePref();
+                    openResultsAnimation();
+                } else if (!spinnerSet & dateSet) {
+                    setDatePref(startD);
+                    openResultsAnimation();
+                } else //no changes
+                {
+                    openResultsAnimation();
+                }
+            }
+        }, 800);
+    }
+
+    void openResultsAnimation() {
+        Intent settings = new Intent(this, Results.class);
+        Bundle bundle = ActivityOptions.makeCustomAnimation(this,
+                android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+        this.startActivity(settings, bundle); //issue wiht other transitions b/c it's a fragment
     }
 
     void openResults() {
@@ -151,20 +191,28 @@ public class Main extends AppCompatActivity {
     }
 
     public void checkFirstRun() {
-
-        isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+        isFirstRun = getSharedPreferences(help.prefKey, MODE_PRIVATE).getBoolean(help.firstRunKey, true);
         if (isFirstRun) {
-            // Place your dialog code here to display the dialog
-            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+            getSharedPreferences(help.prefKey, MODE_PRIVATE)
                     .edit()
-                    .putBoolean("isFirstRun", false)
+                    .putBoolean(help.firstRunKey, false)
                     .apply();
-        } else if (Helper.getBoolPref("goBack", getApplicationContext())) {
-            Helper.putPref("goBack", false, getApplicationContext());
-
+        } else if (Helper.getBoolPref(help.goBackKey, getApplicationContext())) {
+            Helper.putPref(help.goBackKey, false, getApplicationContext());
         } else {
             openResults();
         }
+    }
+
+    void hideFAB() {
+        Animation hide_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_hide);
+        fab.startAnimation(hide_fab);
+    }
+
+    void showFAB() {
+        fab.setVisibility(View.VISIBLE);
+        Animation show_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_show);
+        fab.startAnimation(show_fab);
     }
 
 }

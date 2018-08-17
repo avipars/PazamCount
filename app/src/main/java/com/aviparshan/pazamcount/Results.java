@@ -1,5 +1,6 @@
 package com.aviparshan.pazamcount;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -44,17 +45,14 @@ public class Results extends AppCompatActivity {
     private Handler handler = new Handler();
     private Runnable runnable;
 
+    Helper help = new Helper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
-
-        Window window = getWindow();
-        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
-        window.setBackgroundDrawable(background);
+        gradient();
 
         card3 = findViewById(R.id.card3);
         pazamStats = findViewById(R.id.pazamStats);
@@ -100,7 +98,7 @@ public class Results extends AppCompatActivity {
     }
 
 
-    void setProressBar(int progress) {
+    void setProcessBar(int progress) {
         ProgressBarAnimation anim = new ProgressBarAnimation(prog, 0, progress);
         anim.setDuration(1500);
         prog.startAnimation(anim);
@@ -115,9 +113,9 @@ public class Results extends AppCompatActivity {
 
     void setDiff() {
         Date current_date = new Date();
-        int timer = Helper.getIntPref("Time", getApplicationContext()); //gets results form shared prefs
+        int timer = Helper.getIntPref(help.spinnerPreferenceKey, getApplicationContext()); //gets results form shared prefs
         int service = Helper.serviceTime(timer);
-        Date startD = new Date(Helper.getLongPref("Date", getApplicationContext()));
+        Date startD = new Date(Helper.getLongPref(help.datePreferenceKey, getApplicationContext()));
         int days = (int) (service * 30.4167);
         f = getFutureDate(startD, days);
         DateFormat df = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.ENGLISH);
@@ -150,7 +148,7 @@ public class Results extends AppCompatActivity {
             Toast.makeText(this, "Error: Divide by zero " + e.getMessage(), Toast.LENGTH_SHORT).show();
             progress = 0;
         }
-        setProressBar(progress);
+        setProcessBar(progress);
         if (!current_date.after(f)) //already released, because otherwise math is messed up
         {
             released = false;
@@ -210,15 +208,24 @@ public class Results extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.back:
-                Helper.putPref("goBack", true, getApplicationContext());
-                Intent intent = new Intent(Results.this, Main.class);
-                startActivity(intent);
+                Helper.putPref(help.goBackKey, true, getApplicationContext());
+                Intent settings = new Intent(this, Main.class);
+                Bundle bundle = ActivityOptions.makeCustomAnimation(this,
+                        android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
+                this.startActivity(settings, bundle); //issue wiht other transitions b/c it's a fragment
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void gradient() {
+        Window window = getWindow();
+        Drawable background = getResources().getDrawable(R.drawable.bg_gradient); //bg_gradient is your gradient.
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+    }
 
     protected void onStop() {
         super.onStop();

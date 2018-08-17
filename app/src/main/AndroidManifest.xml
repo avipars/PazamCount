@@ -21,7 +21,8 @@
         </activity>
         <activity
             android:name=".Results"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/DarkAppTheme">
         </activity>
     </application>
 
