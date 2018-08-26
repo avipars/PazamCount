@@ -5,6 +5,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -39,6 +41,7 @@ import java.util.TimerTask;
 public class Main extends AppCompatActivity {
 
     private static final String[] paths = {"2 Years 8 Months", "2 Years 6 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"};
+    public static final String CHANNEL_ID = "PazamOlam Channel";
     private Spinner spinner;
     DatePicker datePicker;
     String start_date;
@@ -225,6 +228,7 @@ public class Main extends AppCompatActivity {
                     .edit()
                     .putBoolean(help.firstRunKey, false)
                     .apply();
+            createNotificationChannel();
         } else if (Helper.getBoolPref(help.goBackKey, getApplicationContext())) {
             Helper.putPref(help.goBackKey, false, getApplicationContext());
         } else {
@@ -243,4 +247,21 @@ public class Main extends AppCompatActivity {
         fab.startAnimation(show_fab);
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
 }

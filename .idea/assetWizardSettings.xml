@@ -28,7 +28,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_date_" />
+                            <entry key="outputName" value="date" />
                             <entry key="sourceFile" value="C:\Users\avi" />
                           </map>
                         </option>

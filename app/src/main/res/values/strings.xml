@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PazamCount</string>
+    <string name="app_name">PazamOlam Dashboard</string>
     <string name="draft_date">Draft Date</string>
     <string name="btn_sign_up">Save</string>
     <string name="service_time">Service Time</string>
@@ -8,4 +8,6 @@
     <string name="percentage_of_service">% Done</string>
     <string name="pazam">Days Served</string>
     <string name="click">Click on a date to continue</string>
+    <string name="channel_name">PazamOlam Notification Channel</string>
+    <string name="channel_description">Here, we will send you notifications based on milestones in your service.</string>
 </resources>

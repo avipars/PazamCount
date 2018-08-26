@@ -3,11 +3,14 @@ package com.aviparshan.pazamcount;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -39,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.aviparshan.pazamcount.Main.CHANNEL_ID;
 import static java.lang.Math.abs;
 
 public class Results extends AppCompatActivity {
@@ -54,6 +58,8 @@ public class Results extends AppCompatActivity {
     Date f;
     int progress;
     boolean released = false;
+    boolean reachedYear = false;
+    int days_left;
     private Handler handler = new Handler();
     private Runnable runnable;
     Toolbar toolbar;
@@ -70,7 +76,6 @@ public class Results extends AppCompatActivity {
             window.setBackgroundDrawable(background);
         }
     }
-
 
     void setProcessBar(int progress) {
         ProgressBarAnimation anim = new ProgressBarAnimation(prog, 0, progress);
@@ -102,9 +107,12 @@ public class Results extends AppCompatActivity {
 
         DateTime now = new DateTime();
         LocalDate today = now.toLocalDate();
-        int days_left = Days.daysBetween(new LocalDate(today), new LocalDate(f)).getDays();
+        days_left = Days.daysBetween(new LocalDate(today), new LocalDate(f)).getDays();
         int total_days = Days.daysBetween(new LocalDate(startD), new LocalDate(f)).getDays();
         int served = total_days - days_left;
+        if (served == 365) {
+            reachedYear = true;
+        }
         double monthsLeft = (days_left) / 30.4375;
         double weeksLeft = (days_left) / 7;
         double hoursLeft = (days_left) * 24;
@@ -218,7 +226,24 @@ public class Results extends AppCompatActivity {
         setDiff();
         if (released) {
             card3.setVisibility(View.GONE);
+            notifyMilestones(1, "Milestone Reached", "You have finished your service, congrats! ");
         }
+        if (progress == 50) {
+            notifyMilestones(2, "Milestone Reached", "You have hit the wall, congrats! ");
+        }
+        if (reachedYear) {
+            notifyMilestones(3, "Pazamhuledet", "You have finished a year of service, congrats! ");
+        }
+        if (progress == 50) {
+            notifyMilestones(2, "Milestone Reached", "You have hit the wall, congrats! ");
+        }
+        if (days_left == 1 || days_left == 0) {
+            notifyMilestones(2, "Almost Out", "You are almost out of the army, congrats! ");
+
+        }
+
+
+
 //        card.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -262,6 +287,7 @@ public class Results extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.menu_patient_home_screen, menu);
 
         menu.add(0, 1, 1, menuIconWithText(getResources().getDrawable(R.drawable.ic_date_), getResources().getString(R.string.go_back)));
+
         return true;
     }
 
@@ -299,6 +325,27 @@ public class Results extends AppCompatActivity {
             handler.removeCallbacksAndMessages(null);
             isTimerRunning = false;
         }
+    }
+
+    private void notifyMilestones(int notificationId, String title, String achievement) {
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, Results.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.date)
+                .setContentTitle(title)
+                .setContentText(achievement + progress + "% Reached")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+
+        notificationManager.notify(notificationId, mBuilder.build());
     }
 }
 
