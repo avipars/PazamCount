@@ -24,6 +24,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.startapp.android.publish.adsCommon.AutoInterstitialPreferences;
+import com.startapp.android.publish.adsCommon.SDKAdPreferences;
+import com.startapp.android.publish.adsCommon.StartAppAd;
+import com.startapp.android.publish.adsCommon.StartAppSDK;
+
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -55,7 +60,7 @@ public class Results extends AppCompatActivity {
     Helper help = new Helper();
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void setStatusBarGradiant(Activity activity) {
+    public static void setStatusBarGradient(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
             Drawable background = activity.getResources().getDrawable(R.drawable.bg_gradient);
@@ -168,8 +173,20 @@ public class Results extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarGradiant(this);
+        setStatusBarGradient(this);
+        StartAppSDK.init(this,
+                "207690388",
+                new SDKAdPreferences()
+                        .setAge(18)
+        );
+        StartAppAd.disableSplash();
         setContentView(R.layout.activity_results);
+
+        StartAppAd.enableAutoInterstitial();
+        StartAppAd.setAutoInterstitialPreferences(
+                new AutoInterstitialPreferences()
+                        .setSecondsBetweenAds(80)
+        );
 
         toolbar = findViewById(R.id.tool);
         setSupportActionBar(toolbar);
