@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PazamOlam Dashboard</string>
+    <string name="app_name">PazamOlam</string>
     <string name="draft_date">Draft Date</string>
     <string name="btn_sign_up">Save</string>
     <string name="service_time">Service Time</string>
@@ -10,4 +10,26 @@
     <string name="click">Click on a date to continue</string>
     <string name="channel_name">PazamOlam Notification Channel</string>
     <string name="channel_description">Here, we will send you notifications based on milestones in your service.</string>
+    <string name="done_button">Done Button</string>
+    <string name="date_picker">Date Picker</string>
+    <string name="_0">0</string>
+    <string name="stats">Stats</string>
+    <string name="start_date_placeholder">8/8/2017</string>
+    <string name="end_date_placeholder">7/4/2020</string>
+    <string name="error_report">Please report to developer</string>
+    <string name="divide_zero">Error: Divide by zero</string>
+    <string name="service_days">Service Days</string>
+    <string name="days_out">Days out of Army</string>
+    <string name="milestone">Milestone Reached</string>
+    <string name="almost">Almost Out</string>
+    <string name="birthday">Pazamhuledet</string>
+    <string name="finished_service">You have finished your service, congrats!</string>
+    <string name="half_service">You have hit the wall, congrats!</string>
+    <string name="year_bday">Happy Pazamhuledet, You have finished a year of service, congrats!</string>
+    <string name="two_year_bday">Happy Pazamhuledet, You have finished 2 years of service, congrats!</string>
+    <string name="alomst_out">You are almost out of the army, congrats!</string>
+    <string name="time_served"> %1$.2f Months Served\n  %2$.2f Weeks Served\n</string>
+    <string name="stats_textview"> %1$d Total Days\n  %2$.2f Months Left\n %3$.2f Weeks Left\n %4$.2f Hours Left\n %5$.2f Minutes Left\n %6$.2f Seconds Left\n</string>
+    <string name="released_stats"> %1$.2f Months Out\n  %2$.2f Weeks Out\n %3$.2f Minutes Out\n %4$.2f Hours Out\n %5$.2f Seconds Out\n</string>
+
 </resources>

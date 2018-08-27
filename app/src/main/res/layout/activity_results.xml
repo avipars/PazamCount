@@ -48,7 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="0"
+                    android:text="@string/_0"
                     android:textColor="@color/white"
                     android:textSize="24sp" />
 
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="0"
+                    android:text="@string/_0"
                     android:textColor="@color/white"
                     android:textSize="24sp" />
 
@@ -103,7 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="0"
+                    android:text="@string/_0"
                     android:textColor="@color/white"
                     android:textSize="24sp" />
 
@@ -155,7 +155,8 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
-                    android:text="8/8/2017"
+                    android:text="@string/start_date_placeholder"
+                    android:textColor="@color/white"
                     android:textSize="12sp" />
 
                 <TextView
@@ -165,7 +166,8 @@
                     android:layout_gravity="end"
                     android:layout_weight="1"
                     android:layoutDirection="rtl"
-                    android:text="7/4/2020"
+                    android:text="@string/end_date_placeholder"
+                    android:textColor="@color/white"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -193,7 +195,8 @@
                 android:layout_margin="5dp"
                 android:gravity="bottom|center"
                 android:padding="5dp"
-                android:text="Stats"
+                android:text="@string/stats"
+                android:textColor="@color/white"
                 android:textSize="18sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
@@ -217,10 +220,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/progressBar"
-            android:layout_margin="5dp"
+            android:layout_margin="2dp"
             android:gravity="center"
-            android:padding="5dp"
-            android:text="Stats"
+            android:padding="2dp"
+            android:text="@string/stats"
+            android:textColor="@color/white"
             android:textSize="18sp" />
     </android.support.v7.widget.CardView>
 

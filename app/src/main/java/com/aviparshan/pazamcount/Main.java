@@ -41,7 +41,7 @@ import java.util.TimerTask;
 public class Main extends AppCompatActivity {
 
     private static final String[] paths = {"2 Years 8 Months", "2 Years 6 Months", "2 Years 4 Months", "2 Years", "1 Year 6 Months", "1 Year", "6 Months"};
-    public static final String CHANNEL_ID = "PazamOlam Channel";
+    public static final String CHANNEL_ID = "PazamOlam_Channel";
     private Spinner spinner;
     DatePicker datePicker;
     String start_date;
@@ -102,7 +102,7 @@ public class Main extends AppCompatActivity {
             Date formattedDate = new Date(Helper.getLongPref(help.datePreferenceKey, getApplicationContext()));
             String dayString = new SimpleDateFormat("dd", Locale.ENGLISH).format(formattedDate);
             String monthString = new SimpleDateFormat("MM", Locale.ENGLISH).format(formattedDate);
-            String yearString = new SimpleDateFormat("YYYY", Locale.ENGLISH).format(formattedDate);
+            String yearString = new SimpleDateFormat("yyyy", Locale.ENGLISH).format(formattedDate);
             year = Integer.parseInt(yearString);
             month = Integer.parseInt(monthString) - 1; //because it starts at 0
             day = Integer.parseInt(dayString);
@@ -175,7 +175,7 @@ public class Main extends AppCompatActivity {
             // String formatted = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(startD);
             Helper.putPref(help.datePreferenceKey, millis, getApplicationContext());
         } catch (NullPointerException npe) {
-            Toast.makeText(this, npe.toString() + " Please report to developer", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, npe.toString() + getString(R.string.error_report), Toast.LENGTH_SHORT).show();
 //            Calendar c = Calendar.getInstance();
 //            long millis = c.getTimeInMillis();
 //            Helper.putPref("Date", millis, getApplicationContext());

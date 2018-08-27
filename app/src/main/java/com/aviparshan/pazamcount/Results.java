@@ -3,8 +3,11 @@ package com.aviparshan.pazamcount;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,12 +61,19 @@ public class Results extends AppCompatActivity {
     Date f;
     int progress;
     boolean released = false;
-    boolean reachedYear = false;
+    boolean reachedYear = false, reachedTwo = false;
     int days_left;
     private Handler handler = new Handler();
     private Runnable runnable;
     Toolbar toolbar;
     Helper help = new Helper();
+
+    //used for register alarm manager
+    PendingIntent pendingIntent;
+    //used to store running alarmmanager instance
+    AlarmManager alarmManager;
+    //Callback function for Alarmmanager event
+    BroadcastReceiver mReceiver;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void setStatusBarGradient(Activity activity) {
@@ -91,13 +101,14 @@ public class Results extends AppCompatActivity {
     }
 
     void setDiff() {
+        Resources res = getResources();
         Date current_date = new Date();
         int timer = Helper.getIntPref(help.spinnerPreferenceKey, getApplicationContext()); //gets results form shared prefs
         int service = Helper.serviceTime(timer);
         Date startD = new Date(Helper.getLongPref(help.datePreferenceKey, getApplicationContext()));
         int days = (int) (service * 30.4167);
         f = getFutureDate(startD, days);
-        DateFormat df = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.ENGLISH);
+        DateFormat df = new SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.ENGLISH); //Lowercase y to fix issue on older devices with SimpleDateFormat
         DateFormat simple = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
         String reportDate = df.format(f);
@@ -112,6 +123,8 @@ public class Results extends AppCompatActivity {
         int served = total_days - days_left;
         if (served == 365) {
             reachedYear = true;
+        } else if (served == 730) {
+            reachedTwo = true;
         }
         double monthsLeft = (days_left) / 30.4375;
         double weeksLeft = (days_left) / 7;
@@ -127,29 +140,28 @@ public class Results extends AppCompatActivity {
                 progress = abs(progress);
             }
         } catch (ArithmeticException e) {
-            Toast.makeText(this, "Error: Divide by zero " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.divide_zero) + e.getMessage(), Toast.LENGTH_SHORT).show();
             progress = 0;
         }
         setProcessBar(progress);
         if (!current_date.after(f)) //already released, because otherwise math is messed up
         {
             released = false;
-            stats.setText(total_days + " Total Days\n" + Helper.Rounder(monthsLeft) + " Months Left\n" +
-                    weeksLeft + " Weeks Left\n" + hoursLeft + " Hours Left\n" + minutesLeft + " Minutes Left\n"
-                    + secondsLeft + " Seconds Left\n");
+//            stats.setText(total_days + " Total Days\n" + Helper.Rounder(monthsLeft) + " Months Left\n" +
+//                    weeksLeft + " Weeks Left\n" + hoursLeft + " Hours Left\n" + minutesLeft + " Minutes Left\n"
+//                    + secondsLeft + " Seconds Left\n");
             Helper.animateTextView(0, served, pazamDays);
-            pazamStats.setText(Helper.Rounder(monthsDone) + " Months Served\n" + Helper.Rounder(weeksDone) + " Weeks Served\n");
-
+            String stats_view = res.getString(R.string.stats_textview, total_days, Helper.Rounder(monthsLeft), weeksLeft, hoursLeft, minutesLeft, secondsLeft);
+            String months_served = res.getString(R.string.time_served, Helper.Rounder(monthsDone), Helper.Rounder(weeksDone));
+            stats.setText(stats_view);
+            pazamStats.setText(months_served);
         } else {
             released = true;
-            Toast.makeText(this, "Service Finished", Toast.LENGTH_SHORT).show();
-            subDaysServed.setText("Service Days");
-            subDaysLeft.setText(" Days out of Army");
-            stats.setText(Helper.Rounder(abs(monthsLeft)) + " Months Out of Army\n" +
-                    abs(weeksLeft) + " Weeks Out of Army\n" + abs(hoursLeft) + " Hours Out of Army\n" + abs(minutesLeft) + " Minutes Out of Army\n"
-                    + abs(secondsLeft) + " Seconds Out of Army\n");
+            subDaysServed.setText(R.string.service_days);
+            subDaysLeft.setText(R.string.days_out);
+            String time_out = res.getString(R.string.released_stats, Helper.Rounder(abs(monthsLeft)), abs(weeksLeft), abs(hoursLeft), abs(minutesLeft), abs(secondsLeft));
+            stats.setText(time_out);
             Helper.animateTextView(0, total_days, pazamDays);
-
         }
 
         draft.setText(draftDate);
@@ -171,6 +183,8 @@ public class Results extends AppCompatActivity {
 //        count.setText("Days Left: " + abs(days_left));
 //        serv.setText("Days Served: " + served);
 //        progre.setText("Progress: " + progress + "%");
+
+
 //    }
 
     @Override
@@ -226,22 +240,7 @@ public class Results extends AppCompatActivity {
         setDiff();
         if (released) {
             card3.setVisibility(View.GONE);
-            notifyMilestones(1, "Milestone Reached", "You have finished your service, congrats! ");
         }
-        if (progress == 50) {
-            notifyMilestones(2, "Milestone Reached", "You have hit the wall, congrats! ");
-        }
-        if (reachedYear) {
-            notifyMilestones(3, "Pazamhuledet", "You have finished a year of service, congrats! ");
-        }
-        if (progress == 50) {
-            notifyMilestones(2, "Milestone Reached", "You have hit the wall, congrats! ");
-        }
-        if (days_left == 1 || days_left == 0) {
-            notifyMilestones(2, "Almost Out", "You are almost out of the army, congrats! ");
-
-        }
-
 
 
 //        card.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +264,7 @@ public class Results extends AppCompatActivity {
 //        });
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -286,8 +286,7 @@ public class Results extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_patient_home_screen, menu);
 
-        menu.add(0, 1, 1, menuIconWithText(getResources().getDrawable(R.drawable.ic_date_), getResources().getString(R.string.go_back)));
-
+        menu.add(0, 1, 1, menuIconWithText(getResources().getDrawable(R.drawable.ic_stat_onesignal_default), getResources().getString(R.string.go_back)));
         return true;
     }
 
@@ -305,9 +304,9 @@ public class Results extends AppCompatActivity {
         SpannableString sb = new SpannableString("    " + title);
         ImageSpan imageSpan = new ImageSpan(r, ImageSpan.ALIGN_BOTTOM);
         sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         return sb;
     }
+
     protected void onStop() {
         super.onStop();
         stopUpdates();
@@ -327,8 +326,22 @@ public class Results extends AppCompatActivity {
         }
     }
 
-    private void notifyMilestones(int notificationId, String title, String achievement) {
+    public void checkMilestones() {
+        if (released) {
+            notifyMilestones(1, getString(R.string.milestone), getString(R.string.finished_service));
+        } else if (progress == 50) {
+            notifyMilestones(2, getString(R.string.milestone), getString(R.string.half_service));
+        } else if (reachedYear) {
+            notifyMilestones(3, getString(R.string.birthday), getString(R.string.year_bday));
+        } else if (reachedTwo) {
+            notifyMilestones(4, getString(R.string.birthday), getString(R.string.two_year_bday));
+        } else if (days_left == 1 || days_left == 0) {
+            notifyMilestones(5, getString(R.string.almost), getString(R.string.alomst_out));
 
+        }
+    }
+
+    private void notifyMilestones(int notificationId, String title, String achievement) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, Results.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -337,16 +350,16 @@ public class Results extends AppCompatActivity {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.date)
                 .setContentTitle(title)
-                .setContentText(achievement + progress + "% Reached")
+                .setContentText(achievement + progress + "%")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
 // notificationId is a unique int for each notification that you must define
-
         notificationManager.notify(notificationId, mBuilder.build());
     }
+
 }
 
 

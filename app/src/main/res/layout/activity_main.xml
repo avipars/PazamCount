@@ -42,7 +42,7 @@
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_below="@id/serviceTime"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="5dp" />
@@ -63,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/draftDate"
             android:layout_centerInParent="true"
+            android:contentDescription="@string/date_picker"
             android:layout_margin="@dimen/text_margin_small"
             android:background="@drawable/rounded_button"
             android:datePickerMode="calendar"
@@ -79,6 +80,7 @@
         android:focusable="true"
         android:padding="16dp"
         android:src="@drawable/ic_done"
+        android:contentDescription="@string/done_button"
         android:visibility="invisible"
         app:fabSize="normal"
         app:layout_anchor="@id/relative"
