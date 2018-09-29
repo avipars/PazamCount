@@ -4,14 +4,12 @@ package com.aviparshan.pazamcount;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +21,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -48,17 +45,15 @@ public class Main extends AppCompatActivity {
     Calendar calendar;
     Boolean spinnerSet = false, dateSet = false;
     Date startD;
-    DatePickerDialog datePickerDialog;
     boolean isFirstRun;
     int year, month, day;
-    private Button date;
     FloatingActionButton fab;
-    CoordinatorLayout cord;
     Toolbar toolbar;
     Helper help = new Helper();
+    Boolean fabShowing = false;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void setStatusBarGradiant(Activity activity) {
+    public static void setStatusBarGradient(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
             Drawable background = activity.getResources().getDrawable(R.drawable.bg_gradient);
@@ -72,7 +67,7 @@ public class Main extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarGradiant(this);
+        setStatusBarGradient(this);
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.tool);
@@ -87,14 +82,17 @@ public class Main extends AppCompatActivity {
         checkFirstRun();
 
         JodaTimeAndroid.init(this);
-        calendar = Calendar.getInstance();
+
         datePicker = findViewById(R.id.datePicker);
         spinner = findViewById(R.id.spinner);
         fab = findViewById(R.id.floating);
 
-        showFAB();
+        calendar = Calendar.getInstance();
 
+        Calendar calendarA = Calendar.getInstance();
+        calendarA.add(Calendar.YEAR, -5);
         datePicker.setMaxDate(System.currentTimeMillis());
+        datePicker.setMinDate(calendarA.getTimeInMillis());
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
@@ -106,6 +104,7 @@ public class Main extends AppCompatActivity {
             year = Integer.parseInt(yearString);
             month = Integer.parseInt(monthString) - 1; //because it starts at 0
             day = Integer.parseInt(dayString);
+            showFAB();
         } else {
             Calendar c = Calendar.getInstance();
             year = c.get(Calendar.YEAR);
@@ -123,6 +122,9 @@ public class Main extends AppCompatActivity {
                 startD = calendar.getTime();
                 start_date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(startD);
                 dateSet = true;
+                if (spinnerSet) {
+                    showFAB();
+                }
             }
         });
 
@@ -140,6 +142,9 @@ public class Main extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinnerSet = true;
+                if (dateSet) {
+                    showFAB();
+                }
             }
 
             @Override
@@ -191,21 +196,30 @@ public class Main extends AppCompatActivity {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (spinnerSet & dateSet) {
-                    setTimePref();
-                    setDatePref(startD);
-                    openResultsAnimation();
-                } else if (spinnerSet & !dateSet) {
-                    setTimePref();
-                    openResultsAnimation();
-                } else if (!spinnerSet & dateSet) {
-                    setDatePref(startD);
-                    openResultsAnimation();
-                } else //no changes
-                {
-                    openResultsAnimation();
+                if (isFirstRun) {
+                    if (spinnerSet & dateSet) {
+                        setTimePref();
+                        setDatePref(startD);
+                        openResultsAnimation();
+                    }
+                } else {
+                    if (spinnerSet & dateSet) {
+                        setTimePref();
+                        setDatePref(startD);
+                        openResultsAnimation();
+                    } else if (spinnerSet & !dateSet) {
+                        setTimePref();
+                        openResultsAnimation();
+                    } else if (!spinnerSet & dateSet) {
+                        setDatePref(startD);
+                        openResultsAnimation();
+                    } else //no changes
+                    {
+                        openResultsAnimation();
+                    }
                 }
             }
+
         }, 800);
     }
 
@@ -237,14 +251,20 @@ public class Main extends AppCompatActivity {
     }
 
     void hideFAB() {
-        Animation hide_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_hide);
-        fab.startAnimation(hide_fab);
+        if (fabShowing) {
+            fabShowing = false;
+            Animation hide_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_hide);
+            fab.startAnimation(hide_fab);
+        }
     }
 
     void showFAB() {
-        fab.setVisibility(View.VISIBLE);
-        Animation show_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_show);
-        fab.startAnimation(show_fab);
+        if (!fabShowing) {
+            fabShowing = true;
+            fab.setVisibility(View.VISIBLE);
+            Animation show_fab = AnimationUtils.loadAnimation(getApplication(), R.anim.fab_show);
+            fab.startAnimation(show_fab);
+        }
     }
 
     private void createNotificationChannel() {

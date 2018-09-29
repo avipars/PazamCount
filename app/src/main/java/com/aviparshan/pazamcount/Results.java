@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -274,7 +275,10 @@ public class Results extends AppCompatActivity {
                 Intent settings = new Intent(this, Main.class);
                 Bundle bundle = ActivityOptions.makeCustomAnimation(this,
                         android.R.anim.fade_in, android.R.anim.fade_out).toBundle();
-                this.startActivity(settings, bundle); //issue wiht other transitions b/c it's a fragment
+                this.startActivity(settings, bundle); //issue with other transitions b/c it's a fragment
+                return true;
+            case 2:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/pazamolam/home")));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -287,6 +291,7 @@ public class Results extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.menu_patient_home_screen, menu);
 
         menu.add(0, 1, 1, menuIconWithText(getResources().getDrawable(R.drawable.ic_stat_onesignal_default), getResources().getString(R.string.go_back)));
+        menu.add(0, 2, 2, menuIconWithText(getResources().getDrawable(R.drawable.ic_info), "Privacy Policy"));
         return true;
     }
 
