@@ -16,3 +16,4 @@ C:\Users\avi\Downloads\UnitConverter
 
 
 Notification Channel : PazamOlam_Channel
+Icon: ic_stat_onesignal_default
