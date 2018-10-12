@@ -31,11 +31,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.startapp.android.publish.adsCommon.AutoInterstitialPreferences;
-import com.startapp.android.publish.adsCommon.SDKAdPreferences;
-import com.startapp.android.publish.adsCommon.StartAppAd;
-import com.startapp.android.publish.adsCommon.StartAppSDK;
-
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -197,19 +192,10 @@ public class Results extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarGradient(this);
-        StartAppSDK.init(this,
-                "207690388",
-                new SDKAdPreferences()
-                        .setAge(18)
-        );
-        StartAppAd.disableSplash();
+
+
         setContentView(R.layout.activity_results);
 
-        StartAppAd.enableAutoInterstitial();
-        StartAppAd.setAutoInterstitialPreferences(
-                new AutoInterstitialPreferences()
-                        .setSecondsBetweenAds(80)
-        );
 
         toolbar = findViewById(R.id.tool);
         setSupportActionBar(toolbar);
