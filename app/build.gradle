@@ -2,11 +2,7 @@ buildscript {
     repositories {
         maven { url 'https://plugins.gradle.org/m2/'}
     }
-    dependencies {
-        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.11.2, 0.99.99]'
-    }
 }
-apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 repositories {
     maven { url 'https://maven.google.com' }
@@ -19,16 +15,17 @@ android {
         applicationId "com.aviparshan.pazamcount"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 5
-        versionName "10.13.2018"
+        versionCode 6
+        versionName "3.27.2020"
         resConfigs("en", "iw")
-        manifestPlaceholders = [
-                onesignal_app_id: '09a33c2f-2829-4480-9de2-12857e4a920c',
-                // Project number pulled from dashboard, local value is ignored.
-                onesignal_google_project_number: 'REMOTE'
-        ]
+
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled true
             shrinkResources true
@@ -41,9 +38,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'net.danlew:android.joda:2.9.9.4'
+    implementation 'net.danlew:android.joda:2.10.3'
     implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.onesignal:OneSignal:[3.9.2, 3.99.99]'
 
 
 }
