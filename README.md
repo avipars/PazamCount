@@ -7,7 +7,8 @@ Ad Mati
 
 No really, count your remaining service days
 
-We use some cool libraries and effects 
+We use some cool libraries and effects such as the gradient toolbar - full screen. 
+Also some animations with a progress bar. 
 
 Time Ticker
 Transparent ToolBar with gradient 
