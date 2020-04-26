@@ -15,8 +15,6 @@ Card View
 Notification Channel : PazamOlam_Channel
 Icon: ic_stat_onesignal_default
 
-<img src="https://dl3.pushbulletusercontent.com/CUxMutZeZCYg9BUWklH20QmIdST72C9Z/Screenshot2.jpg">
-
-<img src="https://dl3.pushbulletusercontent.com/uMTRNdANQNVQLYr3LsNmWLuFydz4yl5w/Screenshot0.jpg">
+<img src="https://dl3.pushbulletusercontent.com/CUxMutZeZCYg9BUWklH20QmIdST72C9Z/Screenshot2.jpg"> <img src="https://dl3.pushbulletusercontent.com/uMTRNdANQNVQLYr3LsNmWLuFydz4yl5w/Screenshot0.jpg">
 
 On Google Play - https://play.google.com/store/apps/details?id=com.aviparshan.pazamcount
